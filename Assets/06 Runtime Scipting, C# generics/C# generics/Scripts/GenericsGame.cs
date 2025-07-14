@@ -1,17 +1,19 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class GenericsGame : MonoBehaviour
 {
+    public List<GameObject> enemies = new List<GameObject>();
+
     void Start()
     {
-        if (TryGetComponent<AudioSource>(out var audio))
-        {
-            Debug.Log("Found AudioSource");
-        }
-        else
-        {
-            Debug.Log("No AudioSource attached.");
-        }
-    }
+        GameObject enemy1 = new GameObject("Creeper");
+        GameObject enemy2 = new GameObject("Skeleton");
 
+        enemies.Add(enemy1);
+        enemies.Add(enemy2);
+
+        Debug.Log("Enemy count: " + enemies.Count);
+    }
 }
+
