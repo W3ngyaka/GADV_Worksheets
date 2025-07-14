@@ -1,59 +1,33 @@
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player1 : MonoBehaviour
 {
-    public float speed = 5f;
-    public float radius = 5.0f;
-    public float power = 1000.0f;
-    public float kickStrength = 500.0f;
-
-    private CharacterController controller;
-
     void Start()
     {
-        controller = GetComponent<CharacterController>();
-        controller.detectCollisions = false;
+        CheckLineOfSight(); // or put this in Update() for real-time
     }
 
-    void Update()
+    void CheckLineOfSight()
     {
-        CheckExplosion();
-        CheckKick();
-        MovePlayer();
-    }
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        RaycastHit hitData;
 
-    void MovePlayer()
-    {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-        Vector3 move = transform.right * h + transform.forward * v;
-        controller.Move(move * speed * Time.deltaTime);
-    }
-
-    void CheckExplosion()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
+        foreach (GameObject enemy in enemies)
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
-            foreach (Collider hit in colliders)
+            Vector3 vec = enemy.transform.position - transform.position;
+
+            Debug.DrawRay(transform.position, vec, Color.red, 1f);
+
+            if (Physics.Raycast(transform.position, vec, out hitData, 30f))
             {
-                Rigidbody rb = hit.GetComponent<Rigidbody>();
-                if (rb != null)
+                if (hitData.collider.gameObject == enemy)
                 {
-                    rb.AddExplosionForce(power, transform.position, radius);
+                    enemy.GetComponent<Renderer>().material.color = Color.green;
                 }
-            }
-        }
-    }
-
-    void CheckKick()
-    {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Rigidbody rb = GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                rb.AddForce(transform.forward * kickStrength);
+                else
+                {
+                    enemy.GetComponent<Renderer>().material.color = Color.red;
+                }
             }
         }
     }
